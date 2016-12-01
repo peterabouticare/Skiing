@@ -8,8 +8,6 @@
 
 import Foundation
 
-print("Hello, World!")
-
 /// Representation of each position in the map
 struct Position: Hashable, Equatable, CustomStringConvertible {
     let r: Int
@@ -139,6 +137,9 @@ func readMap(fullPath: String)->[[Int]]? {
     return nil
 }
 
+/// Update most optimal path given starting position. This method will update the global variable
+///
+/// - Parameter path: the path to compare with
 func updateMostOptimalPath(path: Path) {
     guard path.count > 0 else {
         return
@@ -153,6 +154,11 @@ func updateMostOptimalPath(path: Path) {
     }
 }
 
+/// To see which of the four direction that the next position is possible for
+///
+/// - Parameters:
+///   - curPos: current position
+///   - curPath: current path it is on
 func findNextSkiingPath(currentPosition curPos: Position, currentPath curPath: Path) {
     
     var stillHasPotentialPath = false
@@ -172,9 +178,9 @@ func findNextSkiingPath(currentPosition curPos: Position, currentPath curPath: P
         }
     }
     
-    // down
-    if afterR < MapArray.count {
-        let nextPos = Position(r:afterR, c:curPos.c)
+    // left
+    if beforeC >= 0 {
+        let nextPos = Position(r:curPos.r, c:beforeC)
         let nextHeight = MapArray[nextPos.r][nextPos.c]
         if curHeight > nextHeight {
             stillHasPotentialPath = true
@@ -182,9 +188,9 @@ func findNextSkiingPath(currentPosition curPos: Position, currentPath curPath: P
         }
     }
     
-    // left
-    if beforeC >= 0 {
-        let nextPos = Position(r:curPos.r, c:beforeC)
+    // down
+    if afterR < MapArray.count {
+        let nextPos = Position(r:afterR, c:curPos.c)
         let nextHeight = MapArray[nextPos.r][nextPos.c]
         if curHeight > nextHeight {
             stillHasPotentialPath = true
@@ -207,6 +213,12 @@ func findNextSkiingPath(currentPosition curPos: Position, currentPath curPath: P
     }
 }
 
+/// Go to next potential position on the path, whether it is 'up', 'down', 'left' and 'right'
+///
+/// - Parameters:
+///   - nextPos: next potential position
+///   - curPos: current position
+///   - curPath: current path it is on
 func goTo(nextPosition nextPos: Position, curPosition curPos: Position, currentPath curPath: Path) {
     var curPath = curPath
     
@@ -220,42 +232,66 @@ func goTo(nextPosition nextPos: Position, curPosition curPos: Position, currentP
     }
 }
 
+/// Find most optimal and steepest path for skiing
+///
+/// - Parameter mapFile: full path to mapping file
+/// - Returns: the longest and steepest path
 func findMostOptimalSkiingPath(mapFile: String) -> Path?{
+    var optimalPath:Path? = nil
     if let map = readMap(fullPath: mapFile) {
         MapArray = map
         for r in 0..<map.count {
             for c in 0..<map[r].count {
                 let startingPos = Position(r: r, c: c)
-                var newPath = Path()
-                if newPath.append(position: startingPos) {
-                    findNextSkiingPath(currentPosition: startingPos, currentPath: newPath)
+                var needToTraverseThisPos = true
+                if r > 0 {
+                    let upHeight = MapArray[r-1][c]
+                    if upHeight > MapArray[r][c] {
+                        // if the up path is higher than the current, we know it has been traversed before
+                        needToTraverseThisPos = false
+                    }
                 }
-            }
-        }
-        // for each position
-        // 1. go to potential next point, whether it is left, right, up, down
-        // 2. if there is no more path, it is finish line
-        // 3. check the hash table whether it exists
-        // 4. if it exists, create new log entry in the hash table for the original starting position
-        // 5. if it does not exist, go to point 1,
-    }
-    var optimalPath:Path? = nil
-    for r in 0..<MapArray.count {
-        for c in 0..<MapArray[r].count {
-            if let path = PathsDictionary[Position(r:r, c:c)] {
-                if optimalPath == nil {
-                    optimalPath = path
-                } else {
-                    if path > optimalPath! {
-                        optimalPath = path
+                if c > 0 {
+                    let leftHeight = MapArray[r][c-1]
+                    if leftHeight > MapArray[r][c] {
+                        // if the left path is higher than the current, we know it has been traversed before
+                        needToTraverseThisPos = false
+                    }
+                }
+                if needToTraverseThisPos {
+                    var newPath = Path()
+                    if newPath.append(position: startingPos) {
+                        findNextSkiingPath(currentPosition: startingPos, currentPath: newPath)
+                    }
+                    if let path = PathsDictionary[Position(r:r, c:c)] {
+                        if optimalPath == nil {
+                            optimalPath = path
+                        } else {
+                            if path > optimalPath! {
+                                optimalPath = path
+                            }
+                        }
                     }
                 }
             }
         }
+        // for each position
+        // 1. check whether we need to traverse this path by looking up the 'up' and 'left' path
+        // 2. go to potential next point, whether it is left, right, up, down
+        // 3. if there is no more path, it is finish line
+        // 4. check the hash table whether it exists
+        // 5. if it exists, create new log entry in the hash table for the original starting position
+        // 6. if it does not exist, go to point 2,
     }
     return optimalPath
 }
 
-if let path = findMostOptimalSkiingPath(mapFile: "/Users/peter/Desktop/Skiing/Skiing/map_2.txt") {
+if let path = findMostOptimalSkiingPath(mapFile: "/Users/peterwong/Desktop/Skiing/Skiing/map_full.txt") {
     print(path)
+    print("Length of the path = \(path.count)")
+    let firstPos = path.positions[0]
+    let lastPos = path.positions[path.count-1]
+    let firstHeight = MapArray[firstPos.r][firstPos.c]
+    let lastHeight = MapArray[lastPos.r][lastPos.c]
+    print("Size of the drop = \(firstHeight-lastHeight)")
 }

@@ -25,8 +25,8 @@
 /* Begin PBXFileReference section */
 		D06733491DEFF8DC009D815B /* Skiing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Skiing; sourceTree = BUILT_PRODUCTS_DIR; };
 		D067334C1DEFF8DC009D815B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		D06733531DEFFAD9009D815B /* map.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = map.txt; sourceTree = "<group>"; };
-		D06733541DF01B95009D815B /* map_2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = map_2.txt; sourceTree = "<group>"; };
+		D06733531DEFFAD9009D815B /* map_sample.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = map_sample.txt; sourceTree = "<group>"; };
+		D06733541DF01B95009D815B /* map_full.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = map_full.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,8 +59,8 @@
 		D067334B1DEFF8DC009D815B /* Skiing */ = {
 			isa = PBXGroup;
 			children = (
-				D06733541DF01B95009D815B /* map_2.txt */,
-				D06733531DEFFAD9009D815B /* map.txt */,
+				D06733541DF01B95009D815B /* map_full.txt */,
+				D06733531DEFFAD9009D815B /* map_sample.txt */,
 				D067334C1DEFF8DC009D815B /* main.swift */,
 			);
 			path = Skiing;
